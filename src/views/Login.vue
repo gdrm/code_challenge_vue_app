@@ -1,6 +1,6 @@
 <template>
-  <v-container class="fill-height" fluid>
-    <v-row align="top" justify="center">
+  <v-container fluid>
+    <v-row justify="center" align="start">
       <v-col cols="12" sm="8" md="4">
         <v-card class="elevation-12">
           <v-toolbar dark flat>
@@ -27,7 +27,7 @@
           </v-card-text>
           <v-card-actions>
             <div class="flex-grow-1"></div>
-            <v-btn color="primary">Login</v-btn>
+            <v-btn color="primary" @click="validateLogin">Login</v-btn>
             <v-btn color="error" @click="resetForm" class="reset">Reset Form</v-btn>
           </v-card-actions>
         </v-card>
@@ -37,6 +37,9 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+import SweetAlert from '@/services/sweetAlert'
+
 export default {
   data () {
     return {
@@ -45,10 +48,29 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['loginAction']),
     resetForm () {
       this.email = ''
       this.password = ''
+    },
+    validateLogin () {
+      const userDetails = {
+        email: this.email,
+        password: this.password
+      }
+      this.loginAction(userDetails)
+        .then(() => {
+          this.$router.push('/dashboard')
+          this.resetForm()
+          SweetAlert.successfullLogin()
+        })
+        .catch(() => {
+          this.$router.push('/login')
+          this.resetForm()
+          SweetAlert.failureLogin()
+        })
     }
+
   }
 }
 </script>
