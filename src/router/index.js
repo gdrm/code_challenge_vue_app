@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
 import Login from '../views/Login.vue'
 import Challenge from '../views/Challenge.vue'
+import Solutions from '../views/Solutions.vue'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
     path: '/challenge/:id',
     name: 'challenge',
     component: Challenge
+  },
+  {
+    path: '/challenge/:id/solutions',
+    name: 'solutions',
+    component: Solutions
   }
 ]
 
