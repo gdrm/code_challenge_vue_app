@@ -1,40 +1,41 @@
 import axios from 'axios'
 import ApiHelper from '@/services/apiHelper'
+import createPersistedState from 'vuex-persistedstate'
 
 export default {
   state: {
-    user: JSON.parse(localStorage.getItem('user')) || {},
-    token: localStorage.getItem('token') || '',
-    status: localStorage.getItem('status') || null
+    userName: '',
+    token: '',
+    status: null
   },
+  plugins: [createPersistedState()],
   mutations: {
     loadingMutation (state) {
       state.status = 'loading'
     },
-    loginSuccessMutation (state, token, userObject) {
-      state.status = 'Success'
-      state.token = token
-      state.user = userObject
+    loginSuccessMutation (state, payload) {
+      state.userName = payload.user.name
+      state.status = 'success'
+      state.token = payload.token
     },
     loginFailureMutation (state) {
-      state.status = 'Failure'
+      state.userName = ''
+      state.status = 'failure'
       state.token = ''
-      state.user = {}
     }
   },
   actions: {
-    loginAction ({ commit }, userDetails) {
+    loginAction ({ commit, dispatch }, userDetails) {
       commit('loadingMutation')
       return new Promise((resolve, reject) => {
         ApiHelper.login(userDetails)
           .then(response => {
             const token = response.token
             const user = response.user
-            commit('loginSuccessMutation', { token, user })
+            commit('loginSuccessMutation', { token: token, user: user })
             localStorage.setItem('token', token)
-            localStorage.setItem('user', JSON.stringify(user))
-            localStorage.setItem('status', 'Success')
-            axios.defaults.headers.common['Authorized'] = token
+            axios.defaults.headers.common['AUTHORIZATION'] = token
+            dispatch('fetchAllChallenges')
             resolve(response)
           })
           .catch(error => {
@@ -46,9 +47,8 @@ export default {
     }
   },
   getters: {
-    isLoggedIn: state => state.status === 'Success',
-    user: state => state.user,
-    status: state => state.status,
+    isLoggedIn: state => state.status === 'success',
+    userName: state => state.userName,
     token: state => state.token
   }
 }
