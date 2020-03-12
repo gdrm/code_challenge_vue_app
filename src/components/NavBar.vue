@@ -2,15 +2,8 @@
   <div>
     <v-toolbar>
       <v-toolbar-title @click="redirectionToHome">Code Challenge</v-toolbar-title>
-
       <div class="flex-grow-1"></div>
-      <v-toolbar-items v-if="isLoggedIn">
-        <v-menu :open-on-hover="true" :close-on-click="true">
-          <template v-slot:activator="{ on }">
-            <v-btn color="teal" elevation="1">{{ user.name }}</v-btn>
-          </template>
-        </v-menu>
-      </v-toolbar-items>
+      <v-btn v-if="isLoggedIn" color="teal" elevation="1">{{ userName }}</v-btn>
     </v-toolbar>
   </div>
 </template>
@@ -21,11 +14,11 @@ import { mapGetters } from 'vuex'
 export default {
   methods: {
     redirectionToHome () {
-      this.$router.push('/')
+      this.$router.push('/dashboard')
     }
   },
   computed: {
-    ...mapGetters(['user']),
+    ...mapGetters(['userName']),
     ...mapGetters(['isLoggedIn'])
   }
 }
