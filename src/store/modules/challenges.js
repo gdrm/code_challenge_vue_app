@@ -17,9 +17,8 @@ export default {
       return new Promise((resolve, reject) => {
         ApiHelper.challenges()
           .then(response => {
-            console.log('________________________________')
             const challenges = response.challenges
-            commit('fetchAllChallengesMutation', { challenges })
+            commit('fetchAllChallengesMutation', challenges)
             resolve(response)
           })
           .catch(error => {
