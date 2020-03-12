@@ -32,5 +32,14 @@ export default {
   async createSolution (id, requestBody) {
     const response = await axios.post(`challenges/${id}/solutions`, requestBody)
     return response.data
+  },
+  async solution (id) {
+    const response = await axios.get(`challenges/${id}/solution`, {
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Accept-Type': 'application/json; charset=utf-8'
+      }
+    })
+    return response.data
   }
 }

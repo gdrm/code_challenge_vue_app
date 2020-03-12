@@ -19,7 +19,6 @@
 
 <script>
 import ApiHelper from '@/services/apiHelper'
-// import moment from 'moment'
 import PrismEditor from 'vue-prism-editor'
 
 export default {

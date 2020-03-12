@@ -1,8 +1,8 @@
 <template>
-  <v-contanier fluid>
-    <v-row v-for="(challenge, index) in challenges" :key="index" class="ma-6">
+  <v-container fluid>
+    <v-row v-for="(challenge, index) in allChallenges" :key="index" class="ma-6">
       <v-card width="100%" outlined>
-        <v-contanier>
+        <v-container>
           <v-card-title class="headline"> {{ challenge.title }}</v-card-title>
           <v-row>
             <v-col cols="22">
@@ -11,31 +11,23 @@
               <v-card-text v-html="challenge.test_cases"></v-card-text>
             </v-col>
             <v-col cols="2">
-              <v-btn v-if="isActive(challenge)" color="primary" @click="goToChallenge">Let's do it</v-btn>
-              <v-btn v-else color="success" @click="goToChallenge(challenge)">Ver Resultados</v-btn>
+              <v-btn width="80%" v-if="isActive(challenge)" color="primary" @click="goToChallenge(challenge)">Let's do it</v-btn>
+              <v-btn width="80%" v-else color="success" @click="goToSolutions(challenge)">Ver Resultados</v-btn>
             </v-col>
           </v-row>
-        </v-contanier>
+        </v-container>
       </v-card>
     </v-row>
-  </v-contanier>
+  </v-container>
 </template>
 
 <script>
-import ApiHelper from '@/services/apiHelper'
+import { mapGetters } from 'vuex'
 import moment from 'moment'
 
 export default {
-  data: function () {
-    return {
-      challenges: []
-    }
-  },
-  created () {
-    ApiHelper.challenges()
-      .then(response => {
-        this.challenges = response.challenges
-      })
+  computed: {
+    ...mapGetters(['allChallenges'])
   },
   methods: {
     isActive (challenge) {
@@ -43,6 +35,9 @@ export default {
     },
     goToChallenge (challenge) {
       this.$router.push(`/challenge/${challenge.id}`)
+    },
+    goToSolutions (challenge) {
+      this.$router.push(`/challenge/${challenge.id}/solutions`)
     }
   }
 }

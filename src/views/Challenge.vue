@@ -1,5 +1,5 @@
 <template>
-  <v-contanier fluid>
+  <v-container fluid>
     <v-row>
       <v-col class="mx-4">
         <h1>{{ challenge.title }}</h1>
@@ -28,16 +28,15 @@
             label="LineNumbers"
           ></v-switch>
           <v-btn class="ma-3" color="secondary" @click="resetEditor">Reset</v-btn>
-          <v-btn class="ma-3" color="primary" @click="sendSolution">Submit</v-btn>
+          <v-btn class="ma-3" color="primary" @click="sendSolution">{{ editOrSubmit() }}</v-btn>
         </v-row>
       </v-col>
     </v-row>
-  </v-contanier>
+  </v-container>
 </template>
 
 <script>
 import ApiHelper from '@/services/apiHelper'
-// import moment from 'moment'
 import PrismEditor from 'vue-prism-editor'
 
 export default {
@@ -46,19 +45,23 @@ export default {
   },
   data: function () {
     return {
-      challenge: null,
       select: 'Ruby',
       language: 'ruby',
+      code: '',
       languages: ['Ruby', 'Java', 'C'],
-      code: '#Write your code here...',
+      solution: {},
       lineNumbers: false
     }
   },
   created () {
-    ApiHelper.challenge(this.$route.params.id)
-      .then(response => {
-        this.challenge = response
+    this.fetchSolution()
+  },
+  computed: {
+    challenge: function () {
+      return this.$store.getters.allChallenges.find(challenge => {
+        return challenge.id == this.$route.params.id
       })
+    }
   },
   watch: {
     select: function () {
@@ -68,6 +71,27 @@ export default {
   methods: {
     resetEditor () {
       this.code = '#Write your code here...'
+    },
+    editOrSubmit () {
+      if (this.solution.code !== undefined) {
+        return 'Edit solution'
+      } else {
+        return 'Submit solution'
+      }
+    },
+    fetchSolution () {
+      return new Promise(async (resolve) => {
+        await ApiHelper.solution(this.challenge.id)
+          .then(response => {
+            this.solution = response
+            if (response !== undefined) {
+              this.code = response.code
+            } else {
+              this.code = '#Write your code here...'
+            }
+            resolve(response)
+          })
+      })
     },
     sendSolution () {
       ApiHelper.createSolution(this.challenge.id, {
